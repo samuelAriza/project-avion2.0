@@ -20,7 +20,7 @@ entry_commercial = queue_priority.QueuePriority()
 
 #Encolar exit
 
-#Encolar exit
+#Funcion que ordena por prioridad, segun el type: exit o entry
 def order(filename, type):
     emergency = []
     special = []
@@ -56,13 +56,17 @@ def order(filename, type):
     with open(f'{type}_commercial.json', "w") as data_commercial:
         json.dump(commercial, data_commercial, indent=4)
 
+#Ordenar los aviones de salida y enviarlos al archivo correspondiente
 order("data_exit.json", "exit")
+#Encolar los aviones de salida segun la hora
 exit_emergency.glue("exit_emergency.json")
 exit_emergency.glue("exit_special.json")
 exit_emergency.glue("exit_military.json")
 exit_emergency.glue("exit_commercial.json")
 
+#Ordenar los aviones de llegada y enviarlos a los archivos correspondientes
 order("data_entry.json", "entry")
+#Encolar los aviones de llegada segun la hora
 entry_emergency.glue("entry_emergency.json")
 entry_emergency.glue("entry_special.json")
 entry_emergency.glue("entry_military.json")
