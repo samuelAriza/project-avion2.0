@@ -6,6 +6,11 @@ import json
 #Militar 
 #Comercial
 
+#Pistas iniclamente todas libres
+exit_track = {"exit1": True, "exit2":True, "exit3":True}
+entry_track = {"entry1": True, "entry2":True, "Entry3":True}
+
+
 #Creacion de colas de salida
 exit_emergency = queue_priority.QueuePriority()
 exit_special = queue_priority.QueuePriority()
@@ -73,6 +78,4 @@ entry_emergency.glue("entry_military.json")
 entry_emergency.glue("entry_commercial.json")
 
 
-#traer data_entry
-#comparar si es emergencia
-#lo mando a un archivo
+
