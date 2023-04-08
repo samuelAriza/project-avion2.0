@@ -13,24 +13,31 @@ class QueuePriority:
         self._list = []
         self.size = 0
     def glue(self, item):
+        data_order = []
         with open(item, "r+") as file:
             data = json.load(file)
-        print(type(data[0]["hora"]))
 
-        for i in range(0, len(data)):
-             data[i]["hora"] = datetime.strptime(data[i]["hora"], '%Y-%m-%d %H:%M:%S')
+        if len(data)!= 0:
+            print(data[0])
+            for i in range(0, len(data)):
+                data[i]["hora"] = datetime.strptime(data[i]["hora"], '%Y-%m-%d %H:%M:%S')
         
-        data_order = sorted(data, key=lambda x: x["hora"])
+            data_order = sorted(data, key=lambda x: x["hora"])
 
-        for j in range(0, len(data_order)):
-            data_order[j]["hora"] = data_order[j]["hora"].strftime('%Y-%m-%d %H:%M:%S')
+            for j in range(0, len(data_order)):
+                data_order[j]["hora"] = data_order[j]["hora"].strftime('%Y-%m-%d %H:%M:%S')
 
-
-        with open(filename, "w") as file_order:
-            json.dump(data_order, file_order, indent=4)
+        #Archivo auxiliar para ver las colas
+        with open("colas.json", "r+") as colas:
+            cola = json.load(colas)
         
+        cola.append(data_order)
+
+        with open("colas.json", "w") as colas:
+            json.dump(cola, colas, indent=4)
+
         self._list.append(data_order)
-        self.size = self.size + 1
+        self.size = len(data_order)
     def unglue(self):
         first = None
         if(len(self._list) > 0):
