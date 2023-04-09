@@ -32,14 +32,13 @@ def save_as_json(filename, number, type):
             "hora": datetime(2023, 3, 17, random.randint(0, 23), random.randint(0, 59), random.randint(0, 59)).strftime('%Y-%m-%d %H:%M:%S'),
             "duracion": random.randint(60, 360),
             "prioridad": random.choice(priority),
-            "estado": random.choice(["On time", "Delayed", "Cancelled"])
+            ##!!!! Poner el cancelled que lo omiti por simulacion!!!!! ##
+            "estado": random.choice(["On time", "Delayed"])
         }
         data.append(register)
 
     with open(filename, "w") as file:
         json.dump(data, file, indent=4)
 
-save_as_json("data_exit.json", 5, "Salida")
-save_as_json("data_entry.json", 5, "Llegada")
 
 

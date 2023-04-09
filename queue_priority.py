@@ -18,7 +18,6 @@ class QueuePriority:
             data = json.load(file)
 
         if len(data)!= 0:
-            print(data[0])
             for i in range(0, len(data)):
                 data[i]["hora"] = datetime.strptime(data[i]["hora"], '%Y-%m-%d %H:%M:%S')
         
@@ -30,8 +29,10 @@ class QueuePriority:
         #Archivo auxiliar para ver las colas
         with open("colas.json", "r+") as colas:
             cola = json.load(colas)
-        
         cola.append(data_order)
+        
+        for i in range(0, len(data_order)):
+            self._list.append(data_order[i])
 
         with open("colas.json", "w") as colas:
             json.dump(cola, colas, indent=4)
@@ -51,4 +52,5 @@ class QueuePriority:
         for i in range(0, len(self._list)):
              print(self._list[i])
     def get_first(self):
-         first = self._list[0]
+        first = self._list[0]
+        return first
