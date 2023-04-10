@@ -42,9 +42,7 @@ class QueuePriority:
     def unglue(self):
         first = None
         if(len(self._list) > 0):
-             first = self._list[0]
-             self._list = self._list[1:]
-             self.size = self.size - 1       
+            self._list.pop(0)       
         else: 
             raise ValueError("The queue is empty")
         return first
