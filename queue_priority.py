@@ -37,7 +37,6 @@ class QueuePriority:
         with open("colas.json", "w") as colas:
             json.dump(cola, colas, indent=4)
 
-        self._list.append(data_order)
         self.size = len(data_order)
     def unglue(self):
         first = None
@@ -50,5 +49,8 @@ class QueuePriority:
         for i in range(0, len(self._list)):
              print(self._list[i])
     def get_first(self):
-        first = self._list[0]
-        return first
+        if(len(self._list) > 0):
+            first = self._list[0]
+            return first
+        else:
+            return []

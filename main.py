@@ -99,7 +99,7 @@ def order(filename, type):
     with open(f'{type}_commercial.json', "w") as data_commercial:
         json.dump(commercial, data_commercial, indent=4)
 
-print("Iniciar simulacion")
+print("Iniciar simulacion\n")
 generator.save_as_json("data_exit.json", 5, "Salida")
 generator.save_as_json("data_entry.json", 5, "Llegada")
 
@@ -130,18 +130,10 @@ def firsts():
     array.append(exit_special.get_first())
     array.append(exit_military.get_first())
     array.append(exit_commercial.get_first())
-    print("Arreglo")
-    for i in range(0, len(array)):
-        print(array[i])
-    print("\n")
 
-    print("Arreglo organizado")
     for i in range(0, len(array)):
         if(len(array[i]) != 0):
             assign_track.append(array[i])
-    #[{}]
-    for i in range(0, len(assign_track)):
-        print(assign_track[i])
 
     assign_track = sorted(assign_track, key=lambda x: x["hora"])
 
@@ -157,20 +149,16 @@ def firsts():
 def assign_track():
 
     queue_is_empty = False
-    
-
-    while(queue_is_empty == False):
+    flag = True
+    while(flag == True):
 
         assign_track = firsts()
-
-        print(queue_is_empty)
-
-        print(f'El len de la cola es {len(assign_track)}')
         if(exit_track[0] == True):
             exit_track[0] == False
             print(f'Pista : {0} Asignada a avion con numero de vuelo :  {assign_track[0]["numero_vuelo"]}')
             for i in tqdm(range(0, 100), total=100, desc="Despegando ..."):
                 time.sleep(0.05)
+            print("\n")
             print(f'Avion con numero de vuelo {assign_track[0]["numero_vuelo"]} | Despegue completado')
             print("\n")
             priority = assign_track[0]["prioridad"]
@@ -183,10 +171,7 @@ def assign_track():
             else:
                 exit_commercial.unglue()
             exit_track[0] == True
-
-        for i in range(0, len(assign_track)):
-            if(assign_track[i] == 0):
-                queue_is_empty = True
-            else:
-                queue_is_empty = False
+        if(len(assign_track) == 1):
+            break
+        
 assign_track()
