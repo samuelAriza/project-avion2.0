@@ -16,8 +16,8 @@ def initialize():
     with open("data_entry.json", "w") as data_entry:
         json.dump([], data_entry, indent=4)
 
-    #with open("data_exit.json", "w") as data_exit:
-        #json.dump([], data_exit, indent=4)
+    with open("data_exit.json", "w") as data_exit:
+        json.dump([], data_exit, indent=4)
 
     with open("entry_commercial.json", "w") as entry_commercial:
         json.dump([], entry_commercial, indent=4)
@@ -100,8 +100,8 @@ def order(filename, type):
         json.dump(commercial, data_commercial, indent=4)
 
 print("Iniciar simulacion\n")
-#generator.save_as_json("data_exit.json", 5, "Salida")
-generator.save_as_json("data_entry.json", 5, "Llegada")
+generator.save_as_json("data_exit.json", 15, "Salida")
+#generator.save_as_json("data_entry.json", 5, "Llegada")
 
 
 #Ordenar los aviones de salida y enviarlos al archivo correspondiente
@@ -125,7 +125,7 @@ entry_commercial.glue("entry_commercial.json")
 def firsts():
     array = []
     assign_track = []
-    #[[], {}, [], []]
+    
     array.append(exit_emergency.get_first())
     array.append(exit_special.get_first())
     array.append(exit_military.get_first())
@@ -136,6 +136,15 @@ def firsts():
             assign_track.append(array[i])
 
     assign_track = sorted(assign_track, key=lambda x: x["hora"])
+    #Realizar castigo para los aviones que estan Delayed
+    if(len(assign_track) > 0):
+        if(assign_track[0]["estado"] == "Delayed"):
+            print(f'| Avion {assign_track[0]["numero_vuelo"]} | Hora de salida : {assign_track[0]["hora"]} esta retrasado.')
+            print("\n")
+            print("Cola de aviones de salida")
+            assign_track[0]["estado"] = "On time"
+            assign_track.append(assign_track[0])
+            assign_track.pop(0)
 
     #Mirar si hay empate de hora
     if(len(assign_track) > 1):
@@ -158,41 +167,45 @@ def firsts():
     with open("prueba.json", "w") as prueba:
         json.dump(assign_track, prueba, indent=4)
 
-    for i in range(0, len(assign_track)):
-        print(f'| Avion {assign_track[i]["numero_vuelo"]} | Hora de salida : {assign_track[i]["hora"]}')
-    print("\n")
-    print("Proximo avion de salida")
-    print(f'| Avion {assign_track[0]["numero_vuelo"]} | Hora de salida : {assign_track[0]["hora"]}')
-    print("\n")
-    return assign_track
+    if(len(assign_track) > 0):
+        for i in range(0, len(assign_track)):
+            print(f'| Avion {assign_track[i]["numero_vuelo"]} | Hora de salida : {assign_track[i]["hora"]}')
+        print("\n")
+        print("Proximo avion de salida")
+        print(f'| Avion {assign_track[0]["numero_vuelo"]} | Hora de salida : {assign_track[0]["hora"]}')
+        print("\n")
+        return assign_track, len(assign_track)
+    else:
+        return [], 0
 
 #Asignar pistas para aviones de salida
 def assign_track():
 
-    queue_is_empty = False
     flag = True
+    
     while(flag == True):
-
-        assign_track = firsts()
-        if(exit_track[0] == True):
-            exit_track[0] == False
-            print(f'Pista : {0} Asignada a avion con numero de vuelo :  {assign_track[0]["numero_vuelo"]}')
-            for i in tqdm(range(0, 100), total=100, desc="Despegando ..."):
-                time.sleep(0.05)
-            print("\n")
-            print(f'Avion con numero de vuelo {assign_track[0]["numero_vuelo"]} | Despegue completado')
-            print("\n")
-            priority = assign_track[0]["prioridad"]
-            if(priority == "Emergencia"):
-                exit_emergency.unglue()
-            elif (priority == "Especial"):
-                exit_special.unglue()
-            elif(priority == "Militar"):
-                exit_military.unglue()
-            else:
-                exit_commercial.unglue()
-            exit_track[0] == True
-        if(len(assign_track) == 1):
+        assign_track, length = firsts()
+        if (length > 0):
+            if(exit_track[0] == True):
+                exit_track[0] = False
+                print(f'Pista : {0} Asignada a avion con numero de vuelo :  {assign_track[0]["numero_vuelo"]}')
+                for i in tqdm(range(0, 100), total=100, desc="Despegando ..."):
+                        time.sleep(0.05)
+                print("\n")
+                print(f'Avion con numero de vuelo {assign_track[0]["numero_vuelo"]} | Despegue completado')
+                print("\n")
+                priority = assign_track[0]["prioridad"]
+                if(priority == "Emergencia"):
+                    exit_emergency.unglue()
+                elif (priority == "Especial"):
+                    exit_special.unglue()
+                elif(priority == "Militar"):
+                    exit_military.unglue()
+                else:
+                    exit_commercial.unglue()
+                exit_track[0] = True
+        else:
+            flag = False
             break
-        
+
 assign_track()
