@@ -16,8 +16,8 @@ def initialize():
     with open("data_entry.json", "w") as data_entry:
         json.dump([], data_entry, indent=4)
 
-    with open("data_exit.json", "w") as data_exit:
-        json.dump([], data_exit, indent=4)
+    #with open("data_exit.json", "w") as data_exit:
+        #json.dump([], data_exit, indent=4)
 
     with open("entry_commercial.json", "w") as entry_commercial:
         json.dump([], entry_commercial, indent=4)
@@ -100,7 +100,7 @@ def order(filename, type):
         json.dump(commercial, data_commercial, indent=4)
 
 print("Iniciar simulacion\n")
-generator.save_as_json("data_exit.json", 5, "Salida")
+#generator.save_as_json("data_exit.json", 5, "Salida")
 generator.save_as_json("data_entry.json", 5, "Llegada")
 
 
@@ -136,6 +136,27 @@ def firsts():
             assign_track.append(array[i])
 
     assign_track = sorted(assign_track, key=lambda x: x["hora"])
+
+    #Mirar si hay empate de hora
+    if(len(assign_track) > 1):
+        data_priority = {"Emergencia":0, "Especial": 1, "Militar": 2, "Comercial":3}
+        priority = []
+        priority.append(assign_track[0])
+        priority.append(assign_track[1])
+
+        if(priority[0]["hora"] == priority[1]["hora"]):
+            priority[0]["prioridad"] = data_priority[priority[0]["prioridad"]]
+            priority[1]["prioridad"] = data_priority[priority[1]["prioridad"]]
+
+            priority = sorted(priority, key=lambda x: x["prioridad"])
+
+            organize = list(data_priority.keys())
+
+            priority[0]["prioridad"] = organize[priority[0]["prioridad"]]
+            priority[1]["prioridad"] = organize[priority[1]["prioridad"]]
+
+    with open("prueba.json", "w") as prueba:
+        json.dump(assign_track, prueba, indent=4)
 
     for i in range(0, len(assign_track)):
         print(f'| Avion {assign_track[i]["numero_vuelo"]} | Hora de salida : {assign_track[i]["hora"]}')

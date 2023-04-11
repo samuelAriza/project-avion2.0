@@ -29,7 +29,7 @@ def save_as_json(filename, number, type):
             "aeropuerto_llegada": airport,
             "ciudad_origen": city[airport_exit],
             "ciudad_destino":  city[airport],
-            "hora": datetime(2023, 3, 17, random.randint(0, 23), random.randint(0, 59), random.randint(0, 59)).strftime('%Y-%m-%d %H:%M:%S'),
+            "hora": datetime(2023, 3, 17, random.randint(0, 23), random.randint(0, 59)).strftime('%Y-%m-%d %H:%M'),
             "duracion": random.randint(60, 360),
             "prioridad": random.choice(priority),
             ##!!!! Poner el cancelled que lo omiti por simulacion!!!!! ##

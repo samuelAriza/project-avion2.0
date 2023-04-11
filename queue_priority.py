@@ -19,12 +19,12 @@ class QueuePriority:
 
         if len(data)!= 0:
             for i in range(0, len(data)):
-                data[i]["hora"] = datetime.strptime(data[i]["hora"], '%Y-%m-%d %H:%M:%S')
+                data[i]["hora"] = datetime.strptime(data[i]["hora"], '%Y-%m-%d %H:%M')
         
             data_order = sorted(data, key=lambda x: x["hora"])
 
             for j in range(0, len(data_order)):
-                data_order[j]["hora"] = data_order[j]["hora"].strftime('%Y-%m-%d %H:%M:%S')
+                data_order[j]["hora"] = data_order[j]["hora"].strftime('%Y-%m-%d %H:%M')
 
         #Archivo auxiliar para ver las colas
         with open("colas.json", "r+") as colas:
