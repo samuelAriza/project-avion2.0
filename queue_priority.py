@@ -7,7 +7,9 @@ import json
 from operator import attrgetter
 filename = "data.json"
 from datetime import datetime
+import random
 
+#Clase QueuePriority : Cola que organiza segun la prioridad de hora. El metodo encolar recibe un item que es un archivo de tipo .json. y las ordena segun la hora, metodo desencolar, meto __str__ para mostrar las colas, metodo get_first para retornar el primero de la lista, metodo get_size para retornar el tamano de la lista y el metodo penalization que realiza la penalizacion de los vuelos que estan Delayed de a lo sumo 10 posiciones
 class QueuePriority:
     def __init__(self):
         self._list = []
@@ -55,9 +57,17 @@ class QueuePriority:
             return first
         else:
             return []
-    def penalization(self):
-        if(self.size > 0):
-            if(self._list[0]["prioridad"] == "Delayed"):
-                print(f'| Avion {self._list[0]["numero_vuelo"]} | Hora de salida : {self._list[0]["hora"]} esta retrasado.')
-                self._list.pop(0)
-
+    def get_size(self):
+        return self.size
+    def penalization(self, type):
+        if(type == "exit"):
+            tipo = "salida"
+        else:
+            tipo = "entrada"
+        if(len(self._list) > 0):
+            print(f'| Avion {self._list[0]["numero_vuelo"]} | Hora de {tipo} : {self._list[0]["hora"]} esta retrasado.')
+            self._list[0]["estado"] = "On time"
+            number = random.randint(1, 10)
+            self._list.insert(number, self._list[0])
+            self._list.pop(0)
+            
