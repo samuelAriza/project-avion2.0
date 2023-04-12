@@ -12,8 +12,8 @@ def initialize():
     with open("data_entry.json", "w") as data_entry:
         json.dump([], data_entry, indent=4)
 
-    with open("data_exit.json", "w") as data_exit:
-        json.dump([], data_exit, indent=4)
+    #with open("data_exit.json", "w") as data_exit:
+        #json.dump([], data_exit, indent=4)
 
     with open("entry_commercial.json", "w") as entry_commercial:
         json.dump([], entry_commercial, indent=4)
@@ -94,8 +94,8 @@ def order(filename, type):
         json.dump(commercial, data_commercial, indent=4)
 
 print("Iniciar simulacion\n")
-generator.save_as_json("data_exit.json", 15, "Salida")
-generator.save_as_json("data_entry.json", 15, "Llegada")
+#generator.save_as_json("data_exit.json", 15, "Salida")
+#generator.save_as_json("data_entry.json", 15, "Llegada")
 
 
 #Ordenar los aviones de salida y enviarlos al archivo correspondiente
@@ -135,19 +135,27 @@ def firsts(value, value_1, value_2, value_3, type):
     if type == "exit":
         tipo = "salida"
     else:
-        tipo = "llegada"
-    def penalization():
-        if(len(assign_track) > 0):
+    """    tipo = "llegada"
+def penalization():
+        if (len(assign_track) > 0):
             if(assign_track[0]["estado"] == "Delayed"):
                 print(f'| Avion {assign_track[0]["numero_vuelo"]} | Hora de {tipo} : {assign_track[0]["hora"]} esta retrasado.')
                 print("Penalizacion realizada")
                 print("\n")
-                print(f'Cola de aviones de "{tipo}')
+
+                if(assign_track[0]["prioridad"] == "Emergencia"):
+                    exit_emergency[0]["estado"] == "On time"
+                    exit_emergency.append(assign_track[0])
+                    exit_emergency.pop(0)
+                    penalization()
+    penalization()"""
+
+    """print(f'Cola de aviones de "{tipo}')
                 assign_track[0]["estado"] = "On time"
                 assign_track.append(assign_track[0])
                 assign_track.pop(0)
                 penalization()
-    penalization()
+    penalization()"""
 
 
     #Mirar si hay empate de hora    
@@ -228,9 +236,11 @@ def assign_track(value, value_1, value_2, value_3, type):
         else:
             flag = False
             break
+"""""
 print("Aviones de salida\n")
 assign_track(exit_emergency, exit_special, exit_military, exit_commercial, "exit")
 print("\n")
 
 print("Aviones de llegada\n")
 assign_track(entry_emergency, entry_special, entry_military, entry_commercial, "entry")
+"""

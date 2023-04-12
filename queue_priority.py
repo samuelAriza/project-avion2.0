@@ -41,7 +41,8 @@ class QueuePriority:
     def unglue(self):
         first = None
         if(len(self._list) > 0):
-            self._list.pop(0)       
+            self._list.pop(0)    
+            self.size = self.size - 1   
         else: 
             raise ValueError("The queue is empty")
         return first
@@ -54,3 +55,9 @@ class QueuePriority:
             return first
         else:
             return []
+    def penalization(self):
+        if(self.size > 0):
+            if(self._list[0]["prioridad"] == "Delayed"):
+                print(f'| Avion {self._list[0]["numero_vuelo"]} | Hora de salida : {self._list[0]["hora"]} esta retrasado.')
+                self._list.pop(0)
+
