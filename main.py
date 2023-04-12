@@ -5,6 +5,7 @@ from datetime import datetime
 import time
 from tqdm import tqdm
 
+#Funcion initialize que crea los archivos json necesarios que usan otras funciones como argumento para funcionar. Crea los archivos json necesarios y por defecto les anade uno par de corchetes
 def initialize():
     with open("colas.json", "w") as file_colas:
         json.dump([], file_colas, indent=4)
@@ -12,8 +13,8 @@ def initialize():
     with open("data_entry.json", "w") as data_entry:
         json.dump([], data_entry, indent=4)
 
-    #with open("data_exit.json", "w") as data_exit:
-        #json.dump([], data_exit, indent=4)
+    with open("data_exit.json", "w") as data_exit:
+        json.dump([], data_exit, indent=4)
 
     with open("entry_commercial.json", "w") as entry_commercial:
         json.dump([], entry_commercial, indent=4)
@@ -41,8 +42,8 @@ def initialize():
 initialize()
 
 #Pistas iniclamente todas libres
-exit_track = [True, True, True, True]
-entry_track = [True, True, True, True]
+exit_track = [True]
+entry_track = [True]
 
 
 #Creacion de colas de salida
@@ -93,10 +94,59 @@ def order(filename, type):
     with open(f'{type}_commercial.json', "w") as data_commercial:
         json.dump(commercial, data_commercial, indent=4)
 
-print("Iniciar simulacion\n")
-#generator.save_as_json("data_exit.json", 15, "Salida")
-#generator.save_as_json("data_entry.json", 15, "Llegada")
+#Se llama la funcion save_as_json del generador. save_as_json("nombre_archivo.json", # de aviones a generar, tipo: Salida | Llegada)
+generator.save_as_json("data_exit.json", 15, "Salida")
+generator.save_as_json("data_entry.json", 15, "Llegada")
 
+#Permitir el ingreso de un avion antes de la simulacion y guardarlo en su archivo correspondiente segun el tipo asignado
+option = input("Desea ingresar algun avion? y or n\n")
+print("\n")
+
+if(option == "y"):
+    aerolinea = input("Nombre aerolinea\n")
+    numero_vuelo = input("Numero de vuelo\n")
+    tipo_vuelo = input("Tipo de vuelo. Salida o Entrada\n")
+    aeropuerto_salida = input("Aeropuerto de salida\n")
+    aeropuerto_llegada = input("Aeropuerto de llegada\n")
+    ciudad_origen = input("Ciudad origen\n")
+    ciudad_destino = input("Ciudad destino\n")
+    hora = input("Hora\n")
+    hora = int(hora)
+    minutos = input("Minutos\n")
+    minutos = int(minutos)
+    duracion = input("Duracion\n")
+    duracion = int(duracion)
+    prioridad = input("Prioridad : Emergencia, Militar, Comercial o Especial \n")
+    estado = input("Estado : On time, Delayed, Canceelled\n")
+
+    register = {
+        "aerolinea": aerolinea,
+        "numero_vuelo": numero_vuelo,
+        "tipo_vuelo": tipo_vuelo,  
+        "aeropuerto_salida": aeropuerto_salida,
+        "aeropuerto_llegada": aeropuerto_llegada,
+        "ciudad_origen": ciudad_origen,
+        "ciudad_destino":  ciudad_destino,
+        "hora": datetime(2023, 3, 17, hora, minutos).strftime('%Y-%m-%d %H:%M'),
+        "duracion": duracion,
+        "prioridad": prioridad,
+        "estado": estado
+    }
+    if(tipo_vuelo == "Salida"):
+        with open("data_exit.json", "r+") as file:
+            data = json.load(file)
+        data.append(register)
+        with open("data_exit.json", "w") as file:
+            json.dump(data, file, indent=4)
+    else:
+        with open("entry_exit.json", "r+") as file:
+            data = json.load(file)
+        data.append(register)
+        with open("entry_exit.json", "w") as file:
+            json.dump(data, file, indent=4)
+
+#!! Iniciar la simulacion !!
+print("Iniciar simulacion\n")
 
 #Ordenar los aviones de salida y enviarlos al archivo correspondiente
 order("data_exit.json", "exit")
@@ -116,47 +166,48 @@ entry_special.glue("entry_special.json")
 entry_military.glue("entry_military.json")
 entry_commercial.glue("entry_commercial.json")
 
+#Funcion firsts coge los primeros de cada cola para organizarlos segun la hora, resuelve por prioridad en caso de que haya algun empate de hora; resuelve segun la prioridad. Realiza penalizacion de los aviones de salida que estan retrasados
 def firsts(value, value_1, value_2, value_3, type):
-    array = []
-    assign_track = []
+    def get_first():
+        array = []
+        assign_track = []
     
-    array.append(value.get_first())
-    array.append(value_1.get_first())
-    array.append(value_2.get_first())
-    array.append(value_3.get_first())
+        array.append(value.get_first())
+        array.append(value_1.get_first())
+        array.append(value_2.get_first())
+        array.append(value_3.get_first())
 
-    for i in range(0, len(array)):
-        if(len(array[i]) != 0):
-            assign_track.append(array[i])
+        for i in range(0, len(array)):
+            if(len(array[i]) != 0):
+                assign_track.append(array[i])
 
-    assign_track = sorted(assign_track, key=lambda x: x["hora"])
+        assign_track = sorted(assign_track, key=lambda x: x["hora"])
+        return assign_track
+    assign_track = get_first()
 
     #Realizar castigo para los aviones que estan Delayed
     if type == "exit":
         tipo = "salida"
     else:
-    """    tipo = "llegada"
-def penalization():
-        if (len(assign_track) > 0):
-            if(assign_track[0]["estado"] == "Delayed"):
-                print(f'| Avion {assign_track[0]["numero_vuelo"]} | Hora de {tipo} : {assign_track[0]["hora"]} esta retrasado.')
-                print("Penalizacion realizada")
+        tipo = "llegada"
+    if (len(assign_track) > 0):
+        if(assign_track[0]["tipo_vuelo"] == "Salida"):
+            while(assign_track[0]["estado"] == "Delayed"):
+
+                for i in range(0, len(assign_track)):
+                    print(f'| Avion {assign_track[i]["numero_vuelo"]} | Hora de {tipo} : {assign_track[i]["hora"]}')
                 print("\n")
-
                 if(assign_track[0]["prioridad"] == "Emergencia"):
-                    exit_emergency[0]["estado"] == "On time"
-                    exit_emergency.append(assign_track[0])
-                    exit_emergency.pop(0)
-                    penalization()
-    penalization()"""
-
-    """print(f'Cola de aviones de "{tipo}')
-                assign_track[0]["estado"] = "On time"
-                assign_track.append(assign_track[0])
-                assign_track.pop(0)
-                penalization()
-    penalization()"""
-
+                    value.penalization(type)
+                elif(assign_track[0]["prioridad"] == "Especial"):
+                    value_1.penalization(type)
+                elif(assign_track[0]["prioridad"] == "Militar"):
+                    value_2.penalization(type)
+                else:
+                    value_3.penalization(type)
+                assign_track = get_first()
+                print("Penalizacion realizada\n")
+                print("Cola nueva\n")
 
     #Mirar si hay empate de hora    
     if(len(assign_track) > 1):
@@ -175,10 +226,6 @@ def penalization():
 
             priority[0]["prioridad"] = organize[priority[0]["prioridad"]]
             priority[1]["prioridad"] = organize[priority[1]["prioridad"]]
-
-
-    with open("prueba.json", "w") as prueba:
-        json.dump(assign_track, prueba, indent=4)
 
     if(len(assign_track) > 0):
         print("-"*60)
@@ -199,7 +246,7 @@ def penalization():
     else:
         return [], 0
 
-#Asignar pistas para aviones de salida
+#Asignar pistas para aviones de salida. Llama a la funcion first y realiza el control de las pistas
 def assign_track(value, value_1, value_2, value_3, type):
 
     flag = True
@@ -226,21 +273,25 @@ def assign_track(value, value_1, value_2, value_3, type):
                 priority = assign_track[0]["prioridad"]
                 if(priority == "Emergencia"):
                     value.unglue()
+                    print(f'Aviones de emergencia en lista de espera :  | {value.get_size()}\n')
                 elif (priority == "Especial"):
                     value_1.unglue()
+                    print(f'Aviones de especial en lista de espera :  | {value_1.get_size()}\n')
+
                 elif(priority == "Militar"):
                     value_2.unglue()
+                    print(f'Aviones de militar en lista de espera :  | {value_2.get_size()}\n')
                 else:
                     value_3.unglue()
+                    print(f'Aviones de comercial en lista de espera :  | {value_3.get_size()}\n')
                 exit_track[0] = True
         else:
             flag = False
             break
-"""""
+
 print("Aviones de salida\n")
 assign_track(exit_emergency, exit_special, exit_military, exit_commercial, "exit")
 print("\n")
 
 print("Aviones de llegada\n")
 assign_track(entry_emergency, entry_special, entry_military, entry_commercial, "entry")
-"""

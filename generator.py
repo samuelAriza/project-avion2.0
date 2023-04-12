@@ -2,6 +2,8 @@ import json
 import random
 from datetime import datetime
 
+
+#Generador de la data aleatoria
 airlines = ["LATAM", "Avianca", "Delta", "United", "American Airlines"]
 airports = ["LIM", "BOG", "MIA", "JFK", "LAX", "MAD"]
 city = {"MDE": "Medellin", "LIM": "Lima", "BOG" : "Bogotá", "MIA": "Miami", "JFK": "Nueva York", "LAX" : "Los Ángeles", "MAD": "Madrid"}
@@ -32,8 +34,7 @@ def save_as_json(filename, number, type):
             "hora": datetime(2023, 3, 17, random.randint(0, 23), random.randint(0, 59)).strftime('%Y-%m-%d %H:%M'),
             "duracion": random.randint(60, 360),
             "prioridad": random.choice(priority),
-            ##!!!! Poner el cancelled que lo omiti por simulacion!!!!! ##
-            "estado": random.choice(["On time", "Delayed"])
+            "estado": random.choice(["On time", "Delayed", "Cancelled"])
         }
         data.append(register)
 
